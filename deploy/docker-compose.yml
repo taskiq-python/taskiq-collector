@@ -1,0 +1,57 @@
+version: '3.9'
+
+services:
+  api:
+    build:
+      context: .
+      dockerfile: ./deploy/Dockerfile
+    image: taskiq_collector:${TASKIQ_COLLECTOR_VERSION:-latest}
+    restart: always
+    env_file:
+    - .env
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      TASKIQ_COLLECTOR_HOST: 0.0.0.0
+      TASKIQ_COLLECTOR_DB_HOST: taskiq_collector-db
+      TASKIQ_COLLECTOR_DB_PORT: 5432
+      TASKIQ_COLLECTOR_DB_USER: taskiq_collector
+      TASKIQ_COLLECTOR_DB_PASS: taskiq_collector
+      TASKIQ_COLLECTOR_DB_BASE: taskiq_collector
+
+  db:
+    image: postgres:13.6-bullseye
+    hostname: taskiq_collector-db
+    environment:
+      POSTGRES_PASSWORD: "taskiq_collector"
+      POSTGRES_USER: "taskiq_collector"
+      POSTGRES_DB: "taskiq_collector"
+    volumes:
+    - taskiq_collector-db-data:/var/lib/postgresql/data
+    restart: always
+    healthcheck:
+      test: pg_isready -U taskiq_collector
+      interval: 2s
+      timeout: 3s
+      retries: 40
+
+  migrator:
+    image: taskiq_collector:${TASKIQ_COLLECTOR_VERSION:-latest}
+    restart: "no"
+    command: aerich upgrade
+    environment:
+      TASKIQ_COLLECTOR_DB_HOST: taskiq_collector-db
+      TASKIQ_COLLECTOR_DB_PORT: 5432
+      TASKIQ_COLLECTOR_DB_USER: taskiq_collector
+      TASKIQ_COLLECTOR_DB_PASS: taskiq_collector
+      TASKIQ_COLLECTOR_DB_BASE: taskiq_collector
+    depends_on:
+      db:
+        condition: service_healthy
+
+
+
+volumes:
+  taskiq_collector-db-data:
+    name: taskiq_collector-db-data
