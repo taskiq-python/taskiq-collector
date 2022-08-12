@@ -2,19 +2,15 @@
 name = "taskiq_collector"
 version = "0.1.0"
 description = "Web application to collect taskiq data"
-authors = [
-
-]
-maintainers = [
-
-]
+authors = ["Taskiq team <taskiq@noreply.com>"]
+maintainers = ["Pavel Kirilin <win10@list.ru>"]
 readme = "README.md"
 
 [tool.poetry.dependencies]
 python = "^3.9"
 fastapi = "^0.75.0"
 uvicorn = { version = "^0.17.0", extras = ["standard"] }
-pydantic = {version = "^1.9.0", extras = ["dotenv"]}
+pydantic = { version = "^1.9.0", extras = ["dotenv"] }
 yarl = "^1.7.2"
 ujson = "^5.1.0"
 tortoise-orm = "^0.19.0"
@@ -25,9 +21,9 @@ httptools = "^0.3.0"
 prometheus-client = "^0.14.1"
 prometheus-fastapi-instrumentator = "5.8.1"
 sentry-sdk = "^1.5.12"
-opentelemetry-api = {version = "^1.12.0rc2", allow-prereleases = true}
-opentelemetry-sdk = {version = "^1.12.0rc2", allow-prereleases = true}
-opentelemetry-exporter-otlp = {version = "^1.12.0rc2", allow-prereleases = true}
+opentelemetry-api = { version = "^1.12.0rc2", allow-prereleases = true }
+opentelemetry-sdk = { version = "^1.12.0rc2", allow-prereleases = true }
+opentelemetry-exporter-otlp = { version = "^1.12.0rc2", allow-prereleases = true }
 opentelemetry-instrumentation = "^0.32b0"
 opentelemetry-instrumentation-fastapi = "^0.32b0"
 opentelemetry-instrumentation-asyncpg = "^0.32b0"
@@ -53,7 +49,7 @@ httpx = "^0.22.0"
 [tool.isort]
 profile = "black"
 multi_line_output = 3
-src_paths = ["taskiq_collector",]
+src_paths = ["taskiq_collector"]
 
 [tool.mypy]
 strict = true

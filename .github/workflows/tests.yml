@@ -45,10 +45,21 @@ jobs:
         POETRY_VIRTUALENVS_CREATE: false
     - name: Run mypy check
       run: poetry run mypy .
+  jslint:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: instal deps
+      uses: borales/actions-yarn@v3.0.0
+      with:
+        cmd: --cwd frontend install   # will run `yarn install` command
+    - name: run lint
+      uses: borales/actions-yarn@v3.0.0
+      with:
+        cmd: --cwd frontend lint   # will run `yarn lint` command
   pytest:
     runs-on: ubuntu-latest
     services:
-
       taskiq_collector-db:
         image: postgres:13.6-bullseye
         env:

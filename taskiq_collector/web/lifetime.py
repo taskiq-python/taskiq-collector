@@ -13,9 +13,6 @@ from opentelemetry.sdk.resources import (
 from opentelemetry.sdk.trace import TracerProvider
 from opentelemetry.sdk.trace.export import BatchSpanProcessor
 from opentelemetry.trace import set_tracer_provider
-from prometheus_fastapi_instrumentator.instrumentation import (
-    PrometheusFastApiInstrumentator,
-)
 
 from taskiq_collector.settings import settings
 
@@ -82,17 +79,6 @@ def stop_opentelemetry(app: FastAPI) -> None:  # pragma: no cover
     AsyncPGInstrumentor().uninstrument()
 
 
-def setup_prometheus(app: FastAPI) -> None:  # pragma: no cover
-    """
-    Enables prometheus integration.
-
-    :param app: current application.
-    """
-    PrometheusFastApiInstrumentator(should_group_status_codes=False).instrument(
-        app,
-    ).expose(app, should_gzip=True, name="prometheus_metrics")
-
-
 def register_startup_event(
     app: FastAPI,
 ) -> Callable[[], Awaitable[None]]:  # pragma: no cover
@@ -109,7 +95,6 @@ def register_startup_event(
     @app.on_event("startup")
     async def _startup() -> None:  # noqa: WPS430
         setup_opentelemetry(app)
-        setup_prometheus(app)
         pass  # noqa: WPS420
 
     return _startup

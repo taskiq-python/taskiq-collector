@@ -6,7 +6,7 @@ MODELS_MODULES: List[str] = []  # noqa: WPS407
 
 TORTOISE_CONFIG = {  # noqa: WPS407
     "connections": {
-        "default": str(settings.db_url),
+        "default": settings.db_url,
     },
     "apps": {
         "models": {

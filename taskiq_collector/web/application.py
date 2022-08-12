@@ -6,6 +6,7 @@ import sentry_sdk
 from fastapi import FastAPI
 from fastapi.responses import UJSONResponse
 from fastapi.staticfiles import StaticFiles
+from prometheus_fastapi_instrumentator import PrometheusFastApiInstrumentator
 from sentry_sdk.integrations.asgi import SentryAsgiMiddleware
 from sentry_sdk.integrations.logging import LoggingIntegration
 from tortoise.contrib.fastapi import register_tortoise
@@ -22,12 +23,13 @@ from taskiq_collector.web.lifetime import (
 APP_ROOT = Path(__file__).parent.parent
 
 
-def get_app() -> FastAPI:
+def get_app(enable_metrics: bool = True) -> FastAPI:  # noqa: WPS213
     """
     Get FastAPI application.
 
     This is the main constructor of an application.
 
+    :param enable_metrics: wether we want to enable prometheus.
     :return: application.
     """
     configure_logging()
@@ -47,12 +49,24 @@ def get_app() -> FastAPI:
 
     # Main router for the API.
     app.include_router(router=api_router, prefix="/api")
+
+    # Registers prometheus metrics.
+    if enable_metrics:
+        PrometheusFastApiInstrumentator(should_group_status_codes=False).instrument(
+            app,
+        ).expose(app, should_gzip=True, name="prometheus_metrics")
+
     # Adds static directory.
     # This directory is used to access swagger files.
     app.mount(
-        "/static",
-        StaticFiles(directory=APP_ROOT / "static"),
-        name="static",
+        "/swagger_static",
+        StaticFiles(directory=APP_ROOT / "static/docs"),
+        name="swagger_static",
+    )
+    app.mount(
+        "/",
+        StaticFiles(directory=APP_ROOT / "static/front", html=True),
+        name="front",
     )
 
     # Configures tortoise orm.

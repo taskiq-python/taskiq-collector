@@ -33,7 +33,7 @@ async def initialize_db() -> AsyncGenerator[None, None]:
     """
     initializer(
         MODELS_MODULES,
-        db_url=str(settings.db_url),
+        db_url=settings.db_url,
         app_label="models",
     )
     await Tortoise.init(config=TORTOISE_CONFIG)
@@ -51,7 +51,7 @@ def fastapi_app() -> FastAPI:
 
     :return: fastapi app with mocked dependencies.
     """
-    application = get_app()
+    application = get_app(enable_metrics=False)
     return application  # noqa: WPS331
 
 

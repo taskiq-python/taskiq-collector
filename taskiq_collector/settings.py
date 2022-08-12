@@ -4,7 +4,6 @@ from tempfile import gettempdir
 from typing import Optional
 
 from pydantic import BaseSettings
-from yarl import URL
 
 TEMP_DIR = Path(gettempdir())
 
@@ -40,13 +39,7 @@ class Settings(BaseSettings):
 
     log_level: LogLevel = LogLevel.INFO
 
-    # Variables for the database
-    db_host: str = "localhost"
-    db_port: int = 5432
-    db_user: str = "taskiq_collector"
-    db_pass: str = "taskiq_collector"
-    db_base: str = "taskiq_collector"
-    db_echo: bool = False
+    db_url: str = "sqlite://:memory:"
 
     # This variable is used to define
     # multiproc_dir. It's required for [uvi|guni]corn projects.
@@ -59,22 +52,6 @@ class Settings(BaseSettings):
     # Grpc endpoint for opentelemetry.
     # E.G. http://localhost:4317
     opentelemetry_endpoint: Optional[str] = None
-
-    @property
-    def db_url(self) -> URL:
-        """
-        Assemble database URL from settings.
-
-        :return: database URL.
-        """
-        return URL.build(
-            scheme="postgres",
-            host=self.db_host,
-            port=self.db_port,
-            user=self.db_user,
-            password=self.db_pass,
-            path=f"/{self.db_base}",
-        )
 
     class Config:
         env_file = ".env"

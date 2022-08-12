@@ -44,6 +44,13 @@ repos:
     language: system
     types: [python]
 
+  - id: jslint
+    name: jslint
+    entry: yarn --cwd frontend run lintfix
+    language: system
+    files: frontend/*
+    pass_filenames: false
+
   - id: flake8
     name: Check with Flake8
     entry: poetry run flake8
