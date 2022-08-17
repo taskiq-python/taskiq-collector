@@ -9,9 +9,7 @@ from fastapi.staticfiles import StaticFiles
 from prometheus_fastapi_instrumentator import PrometheusFastApiInstrumentator
 from sentry_sdk.integrations.asgi import SentryAsgiMiddleware
 from sentry_sdk.integrations.logging import LoggingIntegration
-from tortoise.contrib.fastapi import register_tortoise
 
-from taskiq_collector.db.config import TORTOISE_CONFIG
 from taskiq_collector.logging import configure_logging
 from taskiq_collector.settings import settings
 from taskiq_collector.web.api.router import api_router
@@ -23,13 +21,13 @@ from taskiq_collector.web.lifetime import (
 APP_ROOT = Path(__file__).parent.parent
 
 
-def get_app(enable_metrics: bool = True) -> FastAPI:  # noqa: WPS213
+def get_app(add_prometheus: bool = True) -> FastAPI:
     """
     Get FastAPI application.
 
     This is the main constructor of an application.
 
-    :param enable_metrics: wether we want to enable prometheus.
+    :param add_prometheus: if you want to enabe prometheus metrics.
     :return: application.
     """
     configure_logging()
@@ -50,8 +48,7 @@ def get_app(enable_metrics: bool = True) -> FastAPI:  # noqa: WPS213
     # Main router for the API.
     app.include_router(router=api_router, prefix="/api")
 
-    # Registers prometheus metrics.
-    if enable_metrics:
+    if add_prometheus:
         PrometheusFastApiInstrumentator(should_group_status_codes=False).instrument(
             app,
         ).expose(app, should_gzip=True, name="prometheus_metrics")
@@ -69,12 +66,6 @@ def get_app(enable_metrics: bool = True) -> FastAPI:  # noqa: WPS213
         name="front",
     )
 
-    # Configures tortoise orm.
-    register_tortoise(
-        app,
-        config=TORTOISE_CONFIG,
-        add_exception_handlers=True,
-    )
     if settings.sentry_dsn:
         # Enables sentry integration.
         sentry_sdk.init(

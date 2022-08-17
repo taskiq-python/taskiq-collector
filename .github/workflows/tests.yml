@@ -10,7 +10,7 @@ jobs:
     - name: Set up Python
       uses: actions/setup-python@v2
       with:
-        python-version: '3.9'
+        python-version: "3.9"
     - name: Install deps
       uses: knowsuchagency/poetry-install@v1
       env:
@@ -24,7 +24,7 @@ jobs:
     - name: Set up Python
       uses: actions/setup-python@v2
       with:
-        python-version: '3.9'
+        python-version: "3.9"
     - name: Install deps
       uses: knowsuchagency/poetry-install@v1
       env:
@@ -38,7 +38,7 @@ jobs:
     - name: Set up Python
       uses: actions/setup-python@v2
       with:
-        python-version: '3.9'
+        python-version: "3.9"
     - name: Install deps
       uses: knowsuchagency/poetry-install@v1
       env:
@@ -59,26 +59,12 @@ jobs:
         cmd: --cwd frontend lint   # will run `yarn lint` command
   pytest:
     runs-on: ubuntu-latest
-    services:
-      taskiq_collector-db:
-        image: postgres:13.6-bullseye
-        env:
-          POSTGRES_PASSWORD: taskiq_collector
-          POSTGRES_USER: taskiq_collector
-          POSTGRES_DB: taskiq_collector
-        options: >-
-          --health-cmd="pg_isready"
-          --health-interval=10s
-          --health-timeout=5s
-          --health-retries=5
-        ports:
-        - 5432:5432
     steps:
     - uses: actions/checkout@v2
     - name: Set up Python
       uses: actions/setup-python@v2
       with:
-        python-version: '3.9'
+        python-version: "3.9"
     - name: Install deps
       uses: knowsuchagency/poetry-install@v1
       env:
@@ -87,4 +73,3 @@ jobs:
       run: poetry run pytest -vv --cov="taskiq_collector" .
       env:
         TASKIQ_COLLECTOR_HOST: "0.0.0.0"
-        TASKIQ_COLLECTOR_DB_HOST: localhost

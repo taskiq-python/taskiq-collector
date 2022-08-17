@@ -14,6 +14,7 @@ from opentelemetry.sdk.trace import TracerProvider
 from opentelemetry.sdk.trace.export import BatchSpanProcessor
 from opentelemetry.trace import set_tracer_provider
 
+from taskiq_collector.db.config import database
 from taskiq_collector.settings import settings
 
 
@@ -94,6 +95,7 @@ def register_startup_event(
 
     @app.on_event("startup")
     async def _startup() -> None:  # noqa: WPS430
+        await database.connect()
         setup_opentelemetry(app)
         pass  # noqa: WPS420
 
@@ -112,6 +114,7 @@ def register_shutdown_event(
 
     @app.on_event("shutdown")
     async def _shutdown() -> None:  # noqa: WPS430
+        await database.disconnect()
         stop_opentelemetry(app)
         pass  # noqa: WPS420
 

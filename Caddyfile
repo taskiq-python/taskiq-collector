@@ -1,0 +1,17 @@
+# Localhost:8080
+:8080 {
+	# Proxy to API routes.
+	reverse_proxy /api/* {
+		to 127.0.0.1:8000
+	}
+	# Swagger static files.
+	reverse_proxy /swagger_static/* {
+		to 127.0.0.1:8000
+	}
+	# Prometheus metrics endpoint.
+	reverse_proxy /metrics {
+		to 127.0.0.1:8000
+	}
+	# Frontend application.
+	reverse_proxy * 127.0.0.1:3000
+}

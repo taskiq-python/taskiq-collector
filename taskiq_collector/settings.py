@@ -6,6 +6,7 @@ from typing import Optional
 from pydantic import BaseSettings
 
 TEMP_DIR = Path(gettempdir())
+SQLITE_FILE = TEMP_DIR / "db.sqlite3"
 
 
 class LogLevel(str, enum.Enum):  # noqa: WPS600
@@ -39,7 +40,8 @@ class Settings(BaseSettings):
 
     log_level: LogLevel = LogLevel.INFO
 
-    db_url: str = "sqlite://:memory:"
+    # Variables for the database
+    db_url: str = f"sqlite:///{SQLITE_FILE.absolute()}"
 
     # This variable is used to define
     # multiproc_dir. It's required for [uvi|guni]corn projects.

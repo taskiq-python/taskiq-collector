@@ -130,22 +130,33 @@ You can read more about pre-commit here: https://pre-commit.com/
 
 If you want to migrate your database, you should run following commands:
 ```bash
-# Upgrade database to the last migration.
-aerich upgrade
+# To run all migrations untill the migration with revision_id.
+alembic upgrade "<revision_id>"
+
+# To perform all pending migrations.
+alembic upgrade "head"
 ```
 
 ### Reverting migrations
 
 If you want to revert migrations, you should run:
 ```bash
-aerich downgrade
+# revert all migrations up to: revision_id.
+alembic downgrade <revision_id>
+
+# Revert everything.
+ alembic downgrade base
 ```
 
 ### Migration generation
 
 To generate migrations you should run:
 ```bash
-aerich migrate
+# For automatic change detection.
+alembic revision --autogenerate
+
+# For empty file generation.
+alembic revision
 ```
 
 

@@ -1,17 +1,13 @@
+from pathlib import Path
 from typing import Any, AsyncGenerator
 
-import nest_asyncio
 import pytest
+from alembic.config import main as migrate
 from fastapi import FastAPI
 from httpx import AsyncClient
-from tortoise import Tortoise
-from tortoise.contrib.test import finalizer, initializer
 
-from taskiq_collector.db.config import MODELS_MODULES, TORTOISE_CONFIG
-from taskiq_collector.settings import settings
+from taskiq_collector.db.config import database
 from taskiq_collector.web.application import get_app
-
-nest_asyncio.apply()
 
 
 @pytest.fixture(scope="session")
@@ -27,21 +23,20 @@ def anyio_backend() -> str:
 @pytest.fixture(autouse=True)
 async def initialize_db() -> AsyncGenerator[None, None]:
     """
-    Initialize models and database.
+    Create models and databases.
 
-    :yields: Nothing.
+    :yield: new engine.
     """
-    initializer(
-        MODELS_MODULES,
-        db_url=settings.db_url,
-        app_label="models",
-    )
-    await Tortoise.init(config=TORTOISE_CONFIG)
+    conf_file = Path(__file__).parent / "alembic.ini"
+    migrate(["-c", str(conf_file), "--raiseerr", "upgrade", "head"])
+
+    await database.connect()
 
     yield
 
-    await Tortoise.close_connections()
-    finalizer()
+    await database.disconnect()
+
+    migrate(["-c", str(conf_file), "--raiseerr", "downgrade", "base"])
 
 
 @pytest.fixture
@@ -51,7 +46,7 @@ def fastapi_app() -> FastAPI:
 
     :return: fastapi app with mocked dependencies.
     """
-    application = get_app(enable_metrics=False)
+    application = get_app(add_prometheus=False)
     return application  # noqa: WPS331
 
 

@@ -1,11 +1,14 @@
 ### Python template
+frontend/node_modules
+frontend/.nuxt
+frontend/dist
 
 deploy/
 .idea/
 .vscode/
 .git/
 # Byte-compiled / optimized / DLL files
-__pycache__/
+**__pycache__/
 *.py[cod]
 *$py.class
 
